@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CurrencyExchange.Core\CurrencyExchange.Core.csproj" />
+  </ItemGroup>
+
 </Project>

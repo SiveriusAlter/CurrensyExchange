@@ -1,4 +1,5 @@
-﻿namespace CurrencyExchange.Core.Models
+﻿
+namespace CurrencyExchange.Core.Models
 {
     public class Currency(int id, string code, string fullName, string sign)
     {
@@ -20,6 +21,11 @@
 
             var currency = new Currency(id, code, fullName, sign);
             return (currency, error);
+        }
+
+        public static object Create(int v1, object id, string v2, object code, string v3, object fullName, string v4, object sign)
+        {
+            throw new NotImplementedException();
         }
     }
 }
