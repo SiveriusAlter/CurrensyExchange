@@ -3,7 +3,7 @@ namespace CurrencyExchange.Core.Models
 {
     public class Currency(int id, string code, string fullName, string sign)
     {
-        public int ID { get; } = id;
+        public int Id { get; } = id;
         public string Code { get; } = code;
         public string FullName { get; } = fullName;
         public string Sign { get; } = sign;

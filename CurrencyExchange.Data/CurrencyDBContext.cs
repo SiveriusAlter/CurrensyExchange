@@ -11,6 +11,6 @@ namespace CurrencyExchange.Data
             
         }
 
-        public DbSet<CurrencyEntity> Currensies { get; set; }
+        public DbSet<CurrencyEntity> Currencies { get; set; }
     }
 }

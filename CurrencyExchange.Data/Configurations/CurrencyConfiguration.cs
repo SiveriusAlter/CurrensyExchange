@@ -8,7 +8,7 @@ namespace CurrencyExchange.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<CurrencyEntity> builder)
         {
-            builder.HasKey(x=>x.ID);
+            builder.HasKey(x=>x.Id);
             builder.Property(b => b.Code)
                 .IsRequired();
             builder.Property(b => b.FullName)

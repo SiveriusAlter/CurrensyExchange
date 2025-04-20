@@ -3,18 +3,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CurrencyExchange.Data.Repositories
 {
-    public class CurrencyRepository(CurrencyDBContext dbContext)
+    public class CurrencyRepository(CurrencyDBContext dbContext) : ICurrencyRepository
     {
-        private readonly CurrencyDBContext DbContext = dbContext;
+        private readonly CurrencyDBContext _dbContext = dbContext;
 
         public async Task<List<Currency>> Get()
         {
-            var currencyEntity = await DbContext.Currensies
+            var currencyEntity = await _dbContext.Currencies
                 .AsNoTracking()
                 .ToListAsync();
 
             var currencies = currencyEntity
-                .Select(b => Currency.Create(b.ID, b.Code, b.FullName, b.Sign).currency)
+                .Select(b => Currency.Create(b.Id, b.Code, b.FullName, b.Sign).currency)
                 .ToList();
             return currencies;
         }
