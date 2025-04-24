@@ -1,12 +1,12 @@
 ﻿
 namespace CurrencyExchange.Core.Models
 {
-    public class Currency(int id, string code, string fullName, string sign)
+    public class Currency(int Id, string Code, string FullName, string Sign)
     {
-        public int Id { get; } = id;
-        public string Code { get; } = code;
-        public string FullName { get; } = fullName;
-        public string Sign { get; } = sign;
+        public int Id { get; set; } = Id;
+        public string Code { get; set; } = Code;
+        public string FullName { get; set; } = FullName;
+        public string Sign { get; set; } = Sign;
 
 
 

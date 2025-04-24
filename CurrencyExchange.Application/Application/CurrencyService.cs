@@ -1,15 +1,15 @@
-﻿using CurrencyExchange.Core.Models;
-using CurrencyExchange.Data.Repositories;
+﻿using CurrencyExchange.Core.Abstrations;
+using CurrencyExchange.Core.Models;
 
 namespace CurrencyExchange.Application.Application
 {
-    public class CurrencyService(ICurrencyRepository currencyRepository) : ICurrencyService
+    public class CurrencyService(ICurrencyExchangeRepository<Currency> currencyRepository) : ICurrencyExchangeService<Currency>
     {
-        private readonly ICurrencyRepository _currencyRepository = currencyRepository;
+        private readonly ICurrencyExchangeRepository<Currency> _currencyRepository = currencyRepository;
 
-        public async Task<List<Currency>> GetAllCurrencies()
+        public async Task<List<Currency>> GetAll()
         {
-            return await _currencyRepository.Get();
+            return await _currencyRepository.GetAll();
         }
     }
 }

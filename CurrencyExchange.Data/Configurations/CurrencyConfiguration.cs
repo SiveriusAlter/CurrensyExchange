@@ -1,12 +1,12 @@
-﻿using CurrencyExchange.Data.Entites;
+﻿using CurrencyExchange.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CurrencyExchange.Data.Configurations
 {
-    internal class CurrencyConfiguration : IEntityTypeConfiguration<CurrencyEntity>
+    internal class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
     {
-        public void Configure(EntityTypeBuilder<CurrencyEntity> builder)
+        public void Configure(EntityTypeBuilder<Currency> builder)
         {
             builder.HasKey(x=>x.Id);
             builder.Property(b => b.Code)
