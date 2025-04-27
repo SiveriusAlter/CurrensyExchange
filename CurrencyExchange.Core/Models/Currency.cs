@@ -10,11 +10,11 @@ namespace CurrencyExchange.Core.Models
 
 
 
-        public static (Currency currency, string error) Create(int id, string code, string fullName, string sign) 
+        public static (Currency currency, string error) Create(int id, string code, string fullName, string sign)
         {
             var error = string.Empty;
 
-            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(sign)) 
+            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(sign))
             {
                 error = "Не заполнен один или несколько параметров валюты";
             }

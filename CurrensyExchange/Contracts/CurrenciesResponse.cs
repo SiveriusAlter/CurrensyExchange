@@ -1,6 +1,4 @@
-﻿using CurrencyExchange.Core.Models;
-
-namespace CurrencyExchange.API.Contracts
+﻿namespace CurrencyExchange.API.Contracts
 {
     public record CurrenciesResponse(
         int ID,

@@ -2,10 +2,11 @@
 
 namespace CurrencyExchange.API.Contracts
 {
-    public record ExchangeRateResponse(
-    int Id,
+    public record ExchangeResponse(
     Currency BaseCurrency,
     Currency TargetCurrency,
-    float Rate
+    float Rate,
+    float Amount,
+    float convertedAmount
     );
 }

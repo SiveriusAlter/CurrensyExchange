@@ -1,5 +1,5 @@
 ﻿using CurrencyExchange.API.Contracts;
-using CurrencyExchange.Core.Abstrations;
+using CurrencyExchange.Core.Abstractions;
 using CurrencyExchange.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 

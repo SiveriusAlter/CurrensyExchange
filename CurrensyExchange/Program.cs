@@ -1,5 +1,5 @@
 using CurrencyExchange.Application.Application;
-using CurrencyExchange.Core.Abstrations;
+using CurrencyExchange.Core.Abstractions;
 using CurrencyExchange.Core.Models;
 using CurrencyExchange.Data;
 using CurrencyExchange.Data.Repositories;
@@ -17,9 +17,10 @@ builder.Services.AddDbContext<CurrencyExchangeDBContext>(
     });
 
 builder.Services.AddScoped<ICurrencyExchangeService<Currency>, CurrencyService>();
-builder.Services.AddScoped<ICurrencyExchangeRepository<Currency>, CurrencyRepository>();
-builder.Services.AddScoped<ICurrencyExchangeService<ExchangeRate>, ExchangeRateService>();
-builder.Services.AddScoped<ICurrencyExchangeRepository<ExchangeRate>, ExchangeRatesRepository>();
+builder.Services.AddScoped<ICurrencyExchangeRepository<Currency>, CurrenciesRepository>();
+builder.Services.AddScoped<IExtendedCurrencyExchangeService<ExchangeRate>, ExchangeRateService>();
+builder.Services.AddScoped<IExtendedCurrencyExchangeRepository<ExchangeRate>, ExchangeRatesRepository>();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
@@ -34,7 +35,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors(policy => 
+app.UseCors(policy =>
     {
         policy.WithHeaders().AllowAnyHeader();
         policy.WithOrigins("http://localhost:4200");
