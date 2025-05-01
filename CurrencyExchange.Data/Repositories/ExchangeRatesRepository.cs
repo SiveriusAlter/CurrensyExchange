@@ -1,7 +1,6 @@
 ﻿using CurrencyExchange.Core.Abstractions;
 using CurrencyExchange.Core.Models;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CurrencyExchange.Data.Repositories
 {
@@ -13,17 +12,17 @@ namespace CurrencyExchange.Data.Repositories
         {
 
             var exchangeEntities = await (from exchangeRate in _dbContext.ExchangeRates
-                                        join baseCurrency in _dbContext.Currencies on exchangeRate.BaseCurrencyId equals baseCurrency.Id
-                                        join targetCurrency in _dbContext.Currencies on exchangeRate.TargetCurrencyId equals targetCurrency.Id
-                                        select new
-                                        {
-                                            exchangeRate.Id,
-                                            exchangeRate.BaseCurrencyId,
-                                            exchangeRate.TargetCurrencyId,
-                                            baseCurrency,
-                                            targetCurrency,
-                                            exchangeRate.Rate
-                                        })
+                                          join baseCurrency in _dbContext.Currencies on exchangeRate.BaseCurrencyId equals baseCurrency.Id
+                                          join targetCurrency in _dbContext.Currencies on exchangeRate.TargetCurrencyId equals targetCurrency.Id
+                                          select new
+                                          {
+                                              exchangeRate.Id,
+                                              exchangeRate.BaseCurrencyId,
+                                              exchangeRate.TargetCurrencyId,
+                                              baseCurrency,
+                                              targetCurrency,
+                                              exchangeRate.Rate
+                                          })
                                  .ToArrayAsync();
 
 
@@ -34,20 +33,20 @@ namespace CurrencyExchange.Data.Repositories
             return exchanges;
         }
 
-        public async Task<ExchangeRate> Get(int id)
+        public async Task<ExchangeRate> Get(string code)
         {
-            var exchangeEntity = await (from exchangeRate in _dbContext.ExchangeRates
-                                        join baseCurrency in _dbContext.Currencies on exchangeRate.BaseCurrencyId equals baseCurrency.Id
-                                        join targetCurrency in _dbContext.Currencies on exchangeRate.TargetCurrencyId equals targetCurrency.Id
-                                        where exchangeRate.Id == id
+            var exchangeEntity = await (from rate in _dbContext.ExchangeRates
+                                        join baseCurrency in _dbContext.Currencies on rate.BaseCurrencyId equals baseCurrency.Id
+                                        join targetCurrency in _dbContext.Currencies on rate.TargetCurrencyId equals targetCurrency.Id
+                                        where rate.BaseCurrency.Code == code || rate.TargetCurrency.Code == code
                                         select new
                                         {
-                                            exchangeRate.Id,
-                                            exchangeRate.BaseCurrencyId,
-                                            exchangeRate.TargetCurrencyId,
+                                            rate.Id,
+                                            rate.BaseCurrencyId,
+                                            rate.TargetCurrencyId,
                                             baseCurrency,
                                             targetCurrency,
-                                            exchangeRate.Rate
+                                            rate.Rate
                                         })
                                         .FirstAsync();
 
@@ -76,19 +75,19 @@ namespace CurrencyExchange.Data.Repositories
             }
 
             var exchangeRates = await (from rate in _dbContext.ExchangeRates
-            join baseCurrency in _dbContext.Currencies on rate.BaseCurrencyId equals baseCurrency.Id
-            join targetCurrency in _dbContext.Currencies on rate.TargetCurrencyId equals targetCurrency.Id
-            where rate.BaseCurrencyId == baseCurrencyId && rate.TargetCurrencyId == targetCurrencyId
-            || rate.BaseCurrencyId == targetCurrencyId && rate.TargetCurrencyId == baseCurrencyId
-            select new
-            {
-                                            rate.Id,
-                                            rate.BaseCurrencyId,
-                                            rate.TargetCurrencyId,
-                                            baseCurrency,
-                                            targetCurrency,
-                                            rate.Rate
-                                        })
+                                       join baseCurrency in _dbContext.Currencies on rate.BaseCurrencyId equals baseCurrency.Id
+                                       join targetCurrency in _dbContext.Currencies on rate.TargetCurrencyId equals targetCurrency.Id
+                                       where rate.BaseCurrencyId == baseCurrencyId && rate.TargetCurrencyId == targetCurrencyId
+                                       || rate.BaseCurrencyId == targetCurrencyId && rate.TargetCurrencyId == baseCurrencyId
+                                       select new
+                                       {
+                                           rate.Id,
+                                           rate.BaseCurrencyId,
+                                           rate.TargetCurrencyId,
+                                           baseCurrency,
+                                           targetCurrency,
+                                           rate.Rate
+                                       })
                                         .ToListAsync();
 
             foreach (var rate in exchangeRates)
@@ -105,6 +104,26 @@ namespace CurrencyExchange.Data.Repositories
                 .Create(exchangeRates[0].Id, exchangeRates[0].TargetCurrencyId, exchangeRates[0].BaseCurrencyId,
                 exchangeRates[0].targetCurrency, exchangeRates[0].baseCurrency, 1 / exchangeRates[0].Rate).exchangeRate;
             return result;
+        }
+
+        public Task<ExchangeRate> Insert(ExchangeRate exchangeRate)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Update(ExchangeRate value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task Delete(string code)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CheckContain(string code)
+        {
+            throw new NotImplementedException();
         }
     }
 }

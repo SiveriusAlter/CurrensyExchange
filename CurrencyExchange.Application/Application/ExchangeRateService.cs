@@ -7,9 +7,9 @@ namespace CurrencyExchange.Application.Application
     {
         private readonly IExtendedCurrencyExchangeRepository<ExchangeRate> _exchangeRateRepository = exchangeRateRepository;
 
-        public async Task<ExchangeRate> Get(int id)
+        public async Task<ExchangeRate> Get(string code)
         {
-            return await _exchangeRateRepository.Get(id);
+            return await _exchangeRateRepository.Get(code);
         }
 
         public async Task<List<ExchangeRate>> GetAll()
@@ -25,6 +25,11 @@ namespace CurrencyExchange.Application.Application
         public float Convert(ExchangeRate rate, float amount)
         {
             return amount * rate.Rate;
+        }
+
+        public Task<ExchangeRate> Insert(ExchangeRate item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

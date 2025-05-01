@@ -7,14 +7,19 @@ namespace CurrencyExchange.Application.Application
     {
         private readonly ICurrencyExchangeRepository<Currency> _currencyRepository = currencyRepository;
 
-        public async Task<Currency> Get(int id)
+        public async Task<Currency> Get(string code)
         {
-            return await _currencyRepository.Get(id);
+            return await _currencyRepository.Get(code);
         }
 
         public async Task<List<Currency>> GetAll()
         {
             return await _currencyRepository.GetAll();
+        }
+
+        public async Task<Currency> Insert(Currency currency)
+        {
+            return await _currencyRepository.Insert(currency);
         }
     }
 }
