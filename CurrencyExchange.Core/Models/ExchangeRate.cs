@@ -28,17 +28,17 @@
         public Currency TargetCurrency { get; }
         public float Rate { get; set; }
 
-        public static (ExchangeRate exchangeRate, string error) Create(int id, int baseCurrencyId, int targetCurrencyId, Currency baseCurrency, Currency targetCurrency, float rate)
+        public static ExchangeRate Create(int id, int baseCurrencyId, int targetCurrencyId, Currency baseCurrency, Currency targetCurrency, float rate)
         {
-            string error = string.Empty;
-            if (baseCurrencyId == targetCurrencyId)
+
+            if (rate == 0)
             {
-                error = "Выбраны одинаковые валюты";
+                throw new ArgumentException("Курс не может быть равен нулю!");
             }
 
             var exchangeRate = new ExchangeRate(id, baseCurrencyId, targetCurrencyId, baseCurrency, targetCurrency, rate);
 
-            return (exchangeRate, error);
+            return exchangeRate;
         }
     }
 }

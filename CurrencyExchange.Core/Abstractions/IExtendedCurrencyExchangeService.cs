@@ -5,7 +5,9 @@ namespace CurrencyExchange.Core.Abstractions
     public interface IExtendedCurrencyExchangeService<T> : ICurrencyExchangeService<T>
         where T : class
     {
-        Task<T> Get(int baseCurrencyId, int targetCurrencyID);
-        public float Convert(T rate, float amount);
+        Task<T> Get(string baseCurrencyCode, string targetCurrencyCode);
+        public float Convert(float rate, float amount);
+        Task<ExchangeRate?> GetAny(string baseCurrencyCode, string targetCurrencyCode);
+        Task<T> Update(T value);
     }
 }

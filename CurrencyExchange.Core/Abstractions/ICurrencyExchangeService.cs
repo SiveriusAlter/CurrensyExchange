@@ -6,5 +6,6 @@
         Task<List<T>> GetAll();
         Task<T> Get(string code);
         Task<T> Insert(T item);
+        Task<T> Update(T item);
     }
 }

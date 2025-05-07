@@ -12,13 +12,14 @@ namespace CurrencyExchange.API.Controllers
     {
         private readonly IExtendedCurrencyExchangeService<ExchangeRate> _exchangeRate = exchangeRate;
 
-        [HttpGet("from={baseCurrencyID}&to={targetCurrencyID}&amount={amount}")]
-        public async Task<ActionResult<ExchangeResponse>> GetConverted(int baseCurrencyID, int targetCurrencyID, float amount)
+        [HttpGet("from={baseCurrencyCode}&to={targetCurrencyCode}&amount={amount}")]
+        public async Task<ActionResult<ExchangeResponse>> GetConverted(string baseCurrencyCode, string targetCurrencyCode, float amount)
         {
-            var rate = await _exchangeRate.Get(baseCurrencyID, targetCurrencyID);
-            var convertedAmount = _exchangeRate.Convert(rate, amount);
+            var exchange = await _exchangeRate.GetAny(baseCurrencyCode, targetCurrencyCode);
 
-            var response = new ExchangeResponse(rate.BaseCurrency, rate.TargetCurrency, rate.Rate, amount, convertedAmount);
+            var convertedAmount = _exchangeRate.Convert(exchange.Rate, amount);
+
+            var response = new ExchangeResponse(exchange.BaseCurrency, exchange.TargetCurrency, exchange.Rate, amount, convertedAmount);
 
             return Ok(response);
         }

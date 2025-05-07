@@ -21,5 +21,10 @@ namespace CurrencyExchange.Application.Application
         {
             return await _currencyRepository.Insert(currency);
         }
+
+        public Task<Currency> Update(Currency item)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
