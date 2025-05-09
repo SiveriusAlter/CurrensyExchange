@@ -5,7 +5,12 @@
     {
 
         Task<List<T>> GetAll();
-        Task<T> Get(string code);
+        Task<T> Get(string code)
+        {
+            throw new NotSupportedException();
+        }
+
         Task<T> Insert(T value);
+        Task<bool> CheckExist(T value);
     }
 }

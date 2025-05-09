@@ -8,24 +8,27 @@ namespace CurrencyExchange.API.Controllers
     [ApiController]
     [Route("[controller]")]
 
-    public class CurrencyController(ICurrencyExchangeService<Currency> currencyService) : ControllerBase
+    public class CurrencyController(ICurrencyExchangeRepository<Currency> currency) : ControllerBase
     {
-        private readonly ICurrencyExchangeService<Currency> _currencyService = currencyService;
+        private readonly ICurrencyExchangeRepository<Currency> _currencyRepository = currency;
 
         [HttpGet]
-        public async Task<ActionResult<List<CurrenciesResponse>>> GetCurrencies()
+        public async Task<ActionResult<List<CurrencyDTO>>> GetAll()
         {
-            var currencies = await _currencyService.GetAll();
+            var currencies = await _currencyRepository.GetAll();
 
-            var response = currencies.Select(b => new CurrenciesResponse(b.Id, b.Code, b.FullName, b.Sign));
+            var response = currencies
+                .Select(b => new CurrencyDTO(b.Id, b.Code, b.FullName, b.Sign));
 
             return Ok(response);
         }
 
         [HttpPost]
-        public async Task<ActionResult<CurrenciesResponse>> InsertCurrency(Currency currency)
+        public async Task<ActionResult<CurrencyDTO>> Insert(CurrencyDTO currency)
         {
-            var response = await _currencyService.Insert(currency);
+
+            var response = await _currencyRepository
+                .Insert(Currency.Create(currency.ID, currency.Code, currency.FullName, currency.Sign));
             return Ok(response);
         }
     }

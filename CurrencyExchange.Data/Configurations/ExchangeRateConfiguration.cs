@@ -1,12 +1,12 @@
-﻿using CurrencyExchange.Core.Models;
+﻿using CurrencyExchange.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CurrencyExchange.Data.Configurations
 {
-    internal class ExchangeRateConfiguration : IEntityTypeConfiguration<ExchangeRate>
+    internal class ExchangeRateConfiguration : IEntityTypeConfiguration<ExchangeRateEntity>
     {
-        public void Configure(EntityTypeBuilder<ExchangeRate> builder)
+        public void Configure(EntityTypeBuilder<ExchangeRateEntity> builder)
         {
             builder.HasKey(x => x.Id);
             builder.Property(b => b.BaseCurrencyId)

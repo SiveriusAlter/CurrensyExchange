@@ -8,37 +8,36 @@ namespace CurrencyExchange.API.Controllers
     [ApiController]
     [Route("[controller]")]
 
-    public class ExchangeRateController(IExtendedCurrencyExchangeService<ExchangeRate> exchangeRateService, ICurrencyExchangeService<Currency> curencyService) : ControllerBase
+    public class ExchangeRateController(IExtendedCurrencyExchangeRepository<ExchangeRate> exchangeRate, ICurrencyExchangeRepository<Currency> currency) : ControllerBase
     {
-        private readonly IExtendedCurrencyExchangeService<ExchangeRate> _exchangeRateService = exchangeRateService;
-        private readonly ICurrencyExchangeService<Currency> _curencyService = curencyService;
+        private readonly IExtendedCurrencyExchangeRepository<ExchangeRate> _exchangeRateService = exchangeRate;
+        private readonly ICurrencyExchangeRepository<Currency> _curencyService = currency;
 
         [HttpGet]
-        public async Task<ActionResult<List<ExchangeRatesResponse>>> GetRates()
+        public async Task<ActionResult<List<ExchangeRateDTO>>> GetRates()
         {
-
             var currencies = await _exchangeRateService.GetAll();
-
-            var response = currencies.Select(b => new ExchangeRatesResponse(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
+            var response = currencies.Select(b => new ExchangeRateDTO(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
 
             return Ok(response);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ExchangeRatesResponse>> InsertCurrency(AddExchangeRate addExchangeRate)
+        public async Task<ActionResult<ExchangeRateDTO>> InsertCurrency(AddExchangeRateDTO addExchangeRate)
         {
-            var baseCurrency = _curencyService.Get(addExchangeRate.BaseCurrencyCode).Result;
-            var targetCurrency = _curencyService.Get(addExchangeRate.TargetCurrencyCode).Result;
-            var exchangeRate = new ExchangeRate(0, baseCurrency.Id, targetCurrency.Id, baseCurrency, targetCurrency, addExchangeRate.Rate);
+            var baseCurrency = await _curencyService.Get(addExchangeRate.BaseCurrencyCode);
+            var targetCurrency = await _curencyService.Get(addExchangeRate.TargetCurrencyCode);
+            var exchangeRate = ExchangeRate.Create(0, baseCurrency, targetCurrency, addExchangeRate.Rate);
             var response = await _exchangeRateService.Insert(exchangeRate);
             return Ok(response);
         }
+
         [HttpPatch("{baseCurrencyCode}&{targetCurrencyCode}")]
-        public async Task<ActionResult<ExchangeRatesResponse>> UpdateCurrency(string baseCurrencyCode, string targetCurrencyCode, UpdateRate updateRate)
+        public async Task<ActionResult<ExchangeRateDTO>> UpdateCurrency(string baseCurrencyCode, string targetCurrencyCode, UpdateRateDTO updateRate)
         {
-            var baseCurrency = _curencyService.Get(baseCurrencyCode).Result;
-            var targetCurrency = _curencyService.Get(targetCurrencyCode).Result;
-            var exchangeRate = new ExchangeRate(0, baseCurrency.Id, targetCurrency.Id, baseCurrency, targetCurrency, updateRate.Rate);
+            var baseCurrency = await _curencyService.Get(baseCurrencyCode);
+            var targetCurrency = await _curencyService.Get(targetCurrencyCode);
+            var exchangeRate = ExchangeRate.Create(0, baseCurrency, targetCurrency, updateRate.Rate);
             var response = await _exchangeRateService.Update(exchangeRate);
             return Ok(response);
         }

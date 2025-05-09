@@ -2,43 +2,30 @@
 {
     public class ExchangeRate
     {
-        public ExchangeRate(int Id, int BaseCurrencyId, int TargetCurrencyId, Currency baseCurrency, Currency targetCurrency, float Rate)
+        private ExchangeRate(int id, Currency baseCurrency, Currency targetCurrency, float rate)
         {
-            this.Id = Id;
-            this.BaseCurrencyId = BaseCurrencyId;
-            this.TargetCurrencyId = TargetCurrencyId;
-            this.BaseCurrency = baseCurrency;
-            this.TargetCurrency = targetCurrency;
-            this.Rate = Rate;
+            Id = id;
+            BaseCurrency = baseCurrency;
+            TargetCurrency = targetCurrency;
+            Rate = rate;
         }
 
-        public ExchangeRate(int Id, int BaseCurrencyId, int TargetCurrencyId, float Rate)
-        {
-            this.Id = Id;
-            this.BaseCurrencyId = BaseCurrencyId;
-            this.TargetCurrencyId = TargetCurrencyId;
-            this.Rate = Rate;
-
-        }
-
-        public int Id { get; set; }
-        public int BaseCurrencyId { get; set; }
-        public int TargetCurrencyId { get; set; }
+        public int Id { get; }
         public Currency BaseCurrency { get; }
         public Currency TargetCurrency { get; }
-        public float Rate { get; set; }
+        public float Rate { get; }
 
-        public static ExchangeRate Create(int id, int baseCurrencyId, int targetCurrencyId, Currency baseCurrency, Currency targetCurrency, float rate)
+        public static ExchangeRate Create(int id, Currency baseCurrency, Currency targetCurrency, float rate)
         {
 
             if (rate == 0)
             {
                 throw new ArgumentException("Курс не может быть равен нулю!");
             }
+            rate = (float)Math.Round(rate, 6);
 
-            var exchangeRate = new ExchangeRate(id, baseCurrencyId, targetCurrencyId, baseCurrency, targetCurrency, rate);
-
-            return exchangeRate;
+            return new ExchangeRate(id, baseCurrency, targetCurrency, rate);
         }
+
     }
 }

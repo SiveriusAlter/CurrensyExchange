@@ -8,18 +8,20 @@ namespace CurrencyExchange.API.Controllers
     [ApiController]
     [Route("[controller]")]
 
-    public class ExchangeController(IExtendedCurrencyExchangeService<ExchangeRate> exchangeRate) : ControllerBase
+    public class ExchangeController(ICurrencyExchangeService exchange, ICurrencyExchangeRepository<Currency> currency) : ControllerBase
     {
-        private readonly IExtendedCurrencyExchangeService<ExchangeRate> _exchangeRate = exchangeRate;
+        private readonly ICurrencyExchangeService _exchangeRate = exchange;
+        private readonly ICurrencyExchangeRepository<Currency> _currency = currency;
 
         [HttpGet("from={baseCurrencyCode}&to={targetCurrencyCode}&amount={amount}")]
-        public async Task<ActionResult<ExchangeResponse>> GetConverted(string baseCurrencyCode, string targetCurrencyCode, float amount)
+        public async Task<ActionResult<ExchangeDTO>> GetConverted(string baseCurrencyCode, string targetCurrencyCode, float amount)
         {
-            var exchange = await _exchangeRate.GetAny(baseCurrencyCode, targetCurrencyCode);
+            var baseCurrency = await _currency.Get(baseCurrencyCode);
+            var targetCurrency = await _currency.Get(targetCurrencyCode);
 
-            var convertedAmount = _exchangeRate.Convert(exchange.Rate, amount);
+            await exchange.Recalculate(baseCurrency, targetCurrency, amount);
 
-            var response = new ExchangeResponse(exchange.BaseCurrency, exchange.TargetCurrency, exchange.Rate, amount, convertedAmount);
+            var response = new ExchangeDTO(exchange.BaseCurrency, exchange.TargetCurrency, exchange.ExchangeRate.Rate, amount, exchange.RecalculateAmount);
 
             return Ok(response);
         }

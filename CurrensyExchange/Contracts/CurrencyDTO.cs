@@ -1,6 +1,6 @@
 ﻿namespace CurrencyExchange.API.Contracts
 {
-    public record CurrenciesResponse(
+    public record CurrencyDTO(
         int ID,
         string Code,
         string FullName,

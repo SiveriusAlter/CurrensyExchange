@@ -16,9 +16,8 @@ builder.Services.AddDbContext<CurrencyExchangeDBContext>(
         options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(CurrencyExchangeDBContext)));
     });
 
-builder.Services.AddScoped<ICurrencyExchangeService<Currency>, CurrencyService>();
 builder.Services.AddScoped<ICurrencyExchangeRepository<Currency>, CurrenciesRepository>();
-builder.Services.AddScoped<IExtendedCurrencyExchangeService<ExchangeRate>, ExchangeRateService>();
+builder.Services.AddScoped<ICurrencyExchangeService, ExchangeService>();
 builder.Services.AddScoped<IExtendedCurrencyExchangeRepository<ExchangeRate>, ExchangeRatesRepository>();
 builder.Services.AddHttpClient();
 
@@ -32,6 +31,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+
+//app.UseExceptionHandlerMiddleware();
 
 app.MapControllers();
 

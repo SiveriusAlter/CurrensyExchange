@@ -1,5 +1,5 @@
 ﻿namespace CurrencyExchange.API.Contracts
 {
-    public record UpdateRate
+    public record UpdateRateDTO
     (float Rate);
 }

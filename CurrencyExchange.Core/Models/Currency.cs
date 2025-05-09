@@ -1,24 +1,57 @@
 ﻿
+using System.Text.RegularExpressions;
+
 namespace CurrencyExchange.Core.Models
 {
-    public class Currency(int Id, string Code, string FullName, string Sign)
+    public class Currency
     {
-        public int Id { get; set; } = Id;
-        public string Code { get; set; } = Code;
-        public string FullName { get; set; } = FullName;
-        public string Sign { get; set; } = Sign;
+        private Currency(int id, string code, string fullName, string sign)
+        {
+            Id = id;
+            Code = code;
+            FullName = fullName;
+            Sign = sign;
+        }
+
+        public int Id { get; }
+        public string Code { get; }
+        public string FullName { get; }
+        public string Sign { get; }
 
 
 
         public static Currency Create(int id, string code, string fullName, string sign)
         {
-            if (string.IsNullOrEmpty(code) || string.IsNullOrEmpty(fullName) || string.IsNullOrEmpty(sign))
+            code = code.ToUpperInvariant();
+
+            Validate(code, 3, 5, @"[^A-Z]");
+            Validate(fullName, 3, 60, @"[^A-Za-z() ]");
+            Validate(sign, 1, 3, @"[ \n]");
+
+            return new Currency(id, code, fullName, sign);
+        }
+
+        public static bool Validate(string validateString, int minLength, int maxLength, string pattern)
+        {
+
+            if (string.IsNullOrEmpty(validateString))
             {
-                throw new ArgumentException( "Не заполнен один или несколько параметров валюты");
+                throw new ArgumentException("Не заполнен один или несколько параметров валюты\n");
+            }
+            else if (validateString.Length < minLength || validateString.Length > maxLength)
+            {
+                throw new ArgumentException(string
+                    .Format("Не корректное количество символов указано для поля {0} валюты. Код может быть от {1}-х до {2} символов.\n",
+                    validateString,
+                    minLength,
+                    maxLength));
+            }
+            else if (Regex.IsMatch(validateString, pattern, RegexOptions.Compiled))
+            {
+                throw new ArgumentException(string.Format("Не корректные символы в строке {0} валюты.\n", validateString));
             }
 
-            var currency = new Currency(id, code, fullName, sign);
-            return currency;
+            return true;
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace CurrencyExchange.API.Contracts
 {
-    public record ExchangeResponse(
+    public record ExchangeDTO(
     Currency BaseCurrency,
     Currency TargetCurrency,
     float Rate,
