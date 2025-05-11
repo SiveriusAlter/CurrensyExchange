@@ -2,6 +2,7 @@
 using CurrencyExchange.Core.Models;
 using CurrencyExchange.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Query.Expressions.Internal;
 
 namespace CurrencyExchange.Data.Repositories
 {
@@ -29,7 +30,8 @@ namespace CurrencyExchange.Data.Repositories
                 .Where(b => b.Code == code.ToUpperInvariant())
                 .FirstAsync();
 
-            return Currency.Create(currencyEntity.Id, currencyEntity.Code, currencyEntity.FullName, currencyEntity.Sign);
+            return Currency
+                .Create(currencyEntity.Id, currencyEntity.Code, currencyEntity.FullName, currencyEntity.Sign);
 
         }
 
@@ -37,7 +39,7 @@ namespace CurrencyExchange.Data.Repositories
         {
             var exist = await CheckExist(currency);
 
-            if (exist) throw new InvalidOperationException("Валюта уже существует!");
+            if (exist) throw new ArgumentException("Валюта уже существует!");
 
             CurrencyEntity currencyEntity = new(currency.Id, currency.Code, currency.FullName, currency.Sign);
             await _dbContext.Currencies.AddAsync(currencyEntity);
@@ -48,7 +50,7 @@ namespace CurrencyExchange.Data.Repositories
         public async Task<bool> CheckExist(Currency currency)
         {
             return await _dbContext.Currencies
-                .AnyAsync(c => c.Code == currency.Code);
+                .AnyAsync(c => c.Code == currency.Code.ToUpperInvariant());
         }
     }
 }

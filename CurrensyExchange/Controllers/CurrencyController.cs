@@ -3,33 +3,30 @@ using CurrencyExchange.Core.Abstractions;
 using CurrencyExchange.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CurrencyExchange.API.Controllers
+namespace CurrencyExchange.API.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class CurrencyController(ICurrencyExchangeRepository<Currency> currency) : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
+    private readonly ICurrencyExchangeRepository<Currency> _currencyRepository = currency;
 
-    public class CurrencyController(ICurrencyExchangeRepository<Currency> currency) : ControllerBase
+    [HttpGet]
+    public async Task<ActionResult<List<CurrencyDTO>>> GetAll()
     {
-        private readonly ICurrencyExchangeRepository<Currency> _currencyRepository = currency;
+        var currencies = await _currencyRepository.GetAll();
 
-        [HttpGet]
-        public async Task<ActionResult<List<CurrencyDTO>>> GetAll()
-        {
-            var currencies = await _currencyRepository.GetAll();
+        var response = currencies
+            .Select(b => new CurrencyDTO(b.Id, b.Code, b.FullName, b.Sign));
 
-            var response = currencies
-                .Select(b => new CurrencyDTO(b.Id, b.Code, b.FullName, b.Sign));
+        return Ok(response);
+    }
 
-            return Ok(response);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<CurrencyDTO>> Insert(CurrencyDTO currency)
-        {
-
-            var response = await _currencyRepository
-                .Insert(Currency.Create(currency.ID, currency.Code, currency.FullName, currency.Sign));
-            return Ok(response);
-        }
+    [HttpPost]
+    public async Task<ActionResult<CurrencyDTO>> Insert(CurrencyDTO currency)
+    {
+        var response = await _currencyRepository
+            .Insert(Currency.Create(currency.ID, currency.Code, currency.FullName, currency.Sign));
+        return Ok(response);
     }
 }

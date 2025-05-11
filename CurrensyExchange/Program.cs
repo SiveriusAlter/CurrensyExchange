@@ -1,3 +1,4 @@
+using CurrencyExchange.API.Extensions;
 using CurrencyExchange.Application.Application;
 using CurrencyExchange.Core.Abstractions;
 using CurrencyExchange.Core.Models;
@@ -6,15 +7,17 @@ using CurrencyExchange.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var corsConfig = builder.Configuration["CorsConfig:Origin"]
+                 ?? throw new ArgumentNullException(@"CorsConfig:Origin is required.");
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<CurrencyExchangeDBContext>(
-    options =>
-    {
-        options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(CurrencyExchangeDBContext)));
-    });
+builder.Services.AddDbContext<CurrencyExchangeDBContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(CurrencyExchangeDBContext)));
+});
 
 builder.Services.AddScoped<ICurrencyExchangeRepository<Currency>, CurrenciesRepository>();
 builder.Services.AddScoped<ICurrencyExchangeService, ExchangeService>();
@@ -39,9 +42,9 @@ app.MapControllers();
 app.UseCors(policy =>
     {
         policy.WithHeaders().AllowAnyHeader();
-        policy.WithOrigins("http://localhost:4200");
+        policy.WithOrigins(corsConfig);
         policy.WithMethods().AllowAnyMethod();
     }
-    );
+);
 
 app.Run();

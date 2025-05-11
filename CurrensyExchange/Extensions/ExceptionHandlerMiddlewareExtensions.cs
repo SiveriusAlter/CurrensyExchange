@@ -1,10 +1,9 @@
-﻿namespace CurrencyExchange.API.Extensions
+﻿namespace CurrencyExchange.API.Extensions;
+
+public static class ExceptionHandlerMiddlewareExtensions
 {
-    public static class ExceptionHandlerMiddlewareExtensions
+    public static void UseExceptionHandlerMiddleware(this IApplicationBuilder app)
     {
-        public static void UseExceptionHandlerMiddleware(this IApplicationBuilder app)
-        {
-            app.UseMiddleware<ExceptionHandlerMiddleware>();
-        }
+        app.UseMiddleware<ExceptionHandlerMiddleware>();
     }
 }

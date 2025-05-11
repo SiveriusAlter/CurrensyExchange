@@ -1,15 +1,14 @@
 ﻿using CurrencyExchange.Core.Models;
 
-namespace CurrencyExchange.Core.Abstractions
-{
-    public interface ICurrencyExchangeService
-    {
-        Currency BaseCurrency { get; set; }
-        Currency TargetCurrency { get; set; }
-        float Amount { get; set; }
-        ExchangeRate ExchangeRate { get; }
-        float RecalculateAmount { get; }
+namespace CurrencyExchange.Core.Abstractions;
 
-        Task Recalculate(Currency baseCurrency, Currency targetCurrency, float amount);
-    }
+public interface ICurrencyExchangeService
+{
+    Currency BaseCurrency { get; }
+    Currency TargetCurrency { get; }
+    float Amount { get; }
+    ExchangeRate ExchangeRate { get; }
+    float RecalculateAmount { get; }
+
+    Task Calculation(Currency baseCurrency, Currency targetCurrency, float amount);
 }
