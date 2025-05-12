@@ -11,13 +11,22 @@ public class ExchangeRateController(
     IExtendedCurrencyExchangeRepository<ExchangeRate> exchangeRate,
     ICurrencyExchangeRepository<Currency> currency) : ControllerBase
 {
-    private readonly IExtendedCurrencyExchangeRepository<ExchangeRate> _exchangeRateService = exchangeRate;
+    private readonly IExtendedCurrencyExchangeRepository<ExchangeRate> _exchangeRateRepository = exchangeRate;
     private readonly ICurrencyExchangeRepository<Currency> _curencyService = currency;
 
     [HttpGet]
     public async Task<ActionResult<List<ExchangeRateDTO>>> GetRates()
     {
-        var currencies = await _exchangeRateService.GetAll();
+        var exchangeRates = await _exchangeRateRepository.GetAll();
+        var response = exchangeRates.Select(b => new ExchangeRateDTO(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
+
+        return Ok(response);
+    }
+    
+    [HttpGet("{searchString}")] 
+    public async Task<ActionResult<List<ExchangeRateDTO>>> GetRate(string searchString)
+    {
+        var currencies = await _exchangeRateRepository.Find(searchString);
         var response = currencies.Select(b => new ExchangeRateDTO(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
 
         return Ok(response);
@@ -30,7 +39,7 @@ public class ExchangeRateController(
         var targetCurrency = await _curencyService.Get(addExchangeRate.TargetCurrencyCode);
 
         var exchangeRate = ExchangeRate.Create(0, baseCurrency, targetCurrency, addExchangeRate.Rate);
-        var response = await _exchangeRateService.Insert(exchangeRate);
+        var response = await _exchangeRateRepository.Insert(exchangeRate);
 
         return Ok(response);
     }
@@ -43,7 +52,7 @@ public class ExchangeRateController(
         var targetCurrency = await _curencyService.Get(targetCurrencyCode);
 
         var exchangeRate = ExchangeRate.Create(0, baseCurrency, targetCurrency, updateRate.Rate);
-        var response = await _exchangeRateService.Update(exchangeRate);
+        var response = await _exchangeRateRepository.Update(exchangeRate);
 
         return Ok(response);
     }

@@ -10,6 +10,8 @@ public interface ICurrencyExchangeRepository<T>
         throw new NotSupportedException();
     }
 
+    Task<List<T>> Find(string findText);
+    
     Task<T> Insert(T value);
     Task<bool> CheckExist(T value);
 }

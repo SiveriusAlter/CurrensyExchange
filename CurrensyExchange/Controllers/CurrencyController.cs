@@ -22,6 +22,17 @@ public class CurrencyController(ICurrencyExchangeRepository<Currency> currency) 
         return Ok(response);
     }
 
+    [HttpGet("{searchString}")]
+    public async Task<ActionResult<CurrencyDTO>> Get(string searchString)
+    {
+        var currencies = await _currencyRepository.Find(searchString);
+        
+        var response = currencies
+            .Select(b => new CurrencyDTO(b.Id, b.Code, b.FullName, b.Sign));
+
+        return Ok(response);
+    }
+
     [HttpPost]
     public async Task<ActionResult<CurrencyDTO>> Insert(CurrencyDTO currency)
     {

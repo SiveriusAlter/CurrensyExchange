@@ -2,13 +2,11 @@
 using CurrencyExchange.Core.Models;
 using CurrencyExchange.Data.Entities;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Query.Expressions.Internal;
 
 namespace CurrencyExchange.Data.Repositories
 {
     public class CurrenciesRepository(CurrencyExchangeDBContext dbContext) : ICurrencyExchangeRepository<Currency>
     {
-
         private readonly CurrencyExchangeDBContext _dbContext = dbContext;
 
         public async Task<List<Currency>> GetAll()
@@ -17,14 +15,14 @@ namespace CurrencyExchange.Data.Repositories
                 .ToListAsync();
 
             return currencyEntities.Select(c => Currency.Create(
-                c.Id,
-                c.Code,
-                c.FullName,
-                c.Sign))
+                    c.Id,
+                    c.Code,
+                    c.FullName,
+                    c.Sign))
                 .ToList();
         }
 
-        public async Task<Currency> Get(string code)
+        public async Task<Currency?> Get(string code)
         {
             var currencyEntity = await _dbContext.Currencies
                 .Where(b => b.Code == code.ToUpperInvariant())
@@ -32,7 +30,20 @@ namespace CurrencyExchange.Data.Repositories
 
             return Currency
                 .Create(currencyEntity.Id, currencyEntity.Code, currencyEntity.FullName, currencyEntity.Sign);
+        }
 
+        public async Task<List<Currency>> Find(string findText)
+        {
+            var currencyEntities = await _dbContext.Currencies
+                .Where(b => EF.Functions.ILike(b.Code, $"%{findText}%"))
+                .ToListAsync();
+
+            return currencyEntities.Select(c => Currency.Create(
+                    c.Id,
+                    c.Code,
+                    c.FullName,
+                    c.Sign))
+                .ToList();
         }
 
         public async Task<Currency> Insert(Currency currency)

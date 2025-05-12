@@ -7,6 +7,6 @@ public interface IExtendedCurrencyExchangeRepository<T> : ICurrencyExchangeRepos
 {
     Task<T?> Get(int baseCurrencyId, int targetCurrencyId);
 
-    //       Task<List<ExchangeRate>> Get(string code);
-    Task<ExchangeRate> Update(ExchangeRate exchangeRate);
+    
+    Task<T> Update(T exchangeRate);
 }

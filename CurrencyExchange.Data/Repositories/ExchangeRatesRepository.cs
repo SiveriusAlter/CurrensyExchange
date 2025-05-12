@@ -35,26 +35,27 @@ namespace CurrencyExchange.Data.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<ExchangeRate>> Get(string currencyCode)
+        public async Task<List<ExchangeRate>> Find(string findText)
         {
             return await (from rate in _dbContext.ExchangeRates
-                    join baseCurrency in _dbContext.Currencies on rate.BaseCurrencyId equals baseCurrency.Id
-                    join targetCurrency in _dbContext.Currencies on rate.TargetCurrencyId equals targetCurrency.Id
-                    where rate.BaseCurrency.Code == currencyCode || rate.TargetCurrency.Code == currencyCode
+                    where EF.Functions.ILike(rate.BaseCurrency.Code,$"{findText}%") 
+                          || EF.Functions.ILike(rate.TargetCurrency.Code,$"{findText}%")
+                          || EF.Functions.ILike(rate.BaseCurrency.FullName,$"{findText}%")
+                          || EF.Functions.ILike(rate.TargetCurrency.FullName,$"{findText}%")
                     select ExchangeRate.Create
                     (
                         rate.Id,
                         Currency.Create
-                        (baseCurrency.Id,
-                            baseCurrency.Code,
-                            baseCurrency.FullName,
-                            baseCurrency.Sign
+                        (rate.BaseCurrency.Id,
+                         rate.BaseCurrency.Code,
+                         rate.BaseCurrency.FullName,
+                         rate.BaseCurrency.Sign
                         ),
                         Currency.Create
-                        (targetCurrency.Id,
-                            targetCurrency.Code,
-                            targetCurrency.FullName,
-                            targetCurrency.Sign
+                        (rate.TargetCurrency.Id,
+                            rate.TargetCurrency.Code,
+                            rate.TargetCurrency.FullName,
+                            rate.TargetCurrency.Sign
                         ),
                         rate.Rate
                     ))
