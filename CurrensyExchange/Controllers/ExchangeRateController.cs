@@ -18,16 +18,18 @@ public class ExchangeRateController(
     public async Task<ActionResult<List<ExchangeRateDTO>>> GetRates()
     {
         var exchangeRates = await _exchangeRateRepository.GetAll();
-        var response = exchangeRates.Select(b => new ExchangeRateDTO(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
+        var response = exchangeRates
+            .Select(b => new ExchangeRateDTO(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
 
         return Ok(response);
     }
-    
-    [HttpGet("{searchString}")] 
+
+    [HttpGet("{searchString}")]
     public async Task<ActionResult<List<ExchangeRateDTO>>> GetRate(string searchString)
     {
         var currencies = await _exchangeRateRepository.Find(searchString);
-        var response = currencies.Select(b => new ExchangeRateDTO(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
+        var response = currencies
+            .Select(b => new ExchangeRateDTO(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
 
         return Ok(response);
     }
@@ -35,10 +37,14 @@ public class ExchangeRateController(
     [HttpPost]
     public async Task<ActionResult<ExchangeRateDTO>> InsertCurrency(AddExchangeRateDTO addExchangeRate)
     {
+        ExchangeRate.Validate(addExchangeRate.Rate);
+
         var baseCurrency = await _curencyService.Get(addExchangeRate.BaseCurrencyCode);
         var targetCurrency = await _curencyService.Get(addExchangeRate.TargetCurrencyCode);
 
-        var exchangeRate = ExchangeRate.Create(0, baseCurrency, targetCurrency, addExchangeRate.Rate);
+        var exchangeRate = ExchangeRate
+            .Create(0, baseCurrency, targetCurrency, addExchangeRate.Rate);
+
         var response = await _exchangeRateRepository.Insert(exchangeRate);
 
         return Ok(response);
@@ -48,6 +54,8 @@ public class ExchangeRateController(
     public async Task<ActionResult<ExchangeRateDTO>> UpdateCurrency(string baseCurrencyCode, string targetCurrencyCode,
         UpdateRateDTO updateRate)
     {
+        ExchangeRate.Validate(updateRate.Rate);
+
         var baseCurrency = await _curencyService.Get(baseCurrencyCode);
         var targetCurrency = await _curencyService.Get(targetCurrencyCode);
 

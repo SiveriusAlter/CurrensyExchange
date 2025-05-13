@@ -40,8 +40,8 @@ namespace CurrencyExchange.Data.Repositories
             return await (from rate in _dbContext.ExchangeRates
                     where EF.Functions.ILike(rate.BaseCurrency.Code,$"{findText}%") 
                           || EF.Functions.ILike(rate.TargetCurrency.Code,$"{findText}%")
-                          || EF.Functions.ILike(rate.BaseCurrency.FullName,$"{findText}%")
-                          || EF.Functions.ILike(rate.TargetCurrency.FullName,$"{findText}%")
+                          || EF.Functions.ILike(rate.BaseCurrency.FullName,$"%{findText}%")
+                          || EF.Functions.ILike(rate.TargetCurrency.FullName,$"%{findText}%")
                     select ExchangeRate.Create
                     (
                         rate.Id,

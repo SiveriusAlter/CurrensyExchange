@@ -35,14 +35,18 @@ namespace CurrencyExchange.Data.Repositories
         public async Task<List<Currency>> Find(string findText)
         {
             var currencyEntities = await _dbContext.Currencies
-                .Where(b => EF.Functions.ILike(b.Code, $"%{findText}%"))
+                .Where(b =>
+                    EF.Functions.ILike(b.Code, $"%{findText}%")
+                    || EF.Functions.ILike(b.FullName, $"%{findText}%")
+                )
                 .ToListAsync();
 
-            return currencyEntities.Select(c => Currency.Create(
-                    c.Id,
-                    c.Code,
-                    c.FullName,
-                    c.Sign))
+            return currencyEntities.Select(c => Currency
+                    .Create(
+                        c.Id,
+                        c.Code,
+                        c.FullName,
+                        c.Sign))
                 .ToList();
         }
 

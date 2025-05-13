@@ -35,7 +35,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthorization();
 
-//app.UseExceptionHandlerMiddleware();
+app.UseExceptionHandlerMiddleware();
 
 app.MapControllers();
 

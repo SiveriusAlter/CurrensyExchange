@@ -25,6 +25,7 @@ public class CurrencyController(ICurrencyExchangeRepository<Currency> currency) 
     [HttpGet("{searchString}")]
     public async Task<ActionResult<CurrencyDTO>> Get(string searchString)
     {
+        Currency.Validate(searchString, 1, 24, @"[^A-Za-z() ]");
         var currencies = await _currencyRepository.Find(searchString);
         
         var response = currencies

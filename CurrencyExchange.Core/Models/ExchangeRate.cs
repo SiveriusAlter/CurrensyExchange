@@ -20,9 +20,14 @@ public class ExchangeRate
 
     public static ExchangeRate Create(int id, Currency baseCurrency, Currency targetCurrency, float rate)
     {
-        if (rate <= MIN_RATE) throw new ArgumentException(@"Курс не может быть меньше или равен {MIN_RATE}!");
-        if (rate > MAX_RATE) throw new ArgumentException(@"Курс не может быть больше {MAX_RATE}!");
-
+        Validate(rate);
+        
         return new ExchangeRate(id, baseCurrency, targetCurrency, rate);
+    }
+
+    public static void Validate(float rate)
+    {
+        if (rate <= MIN_RATE) throw new ArgumentException($"Курс не может быть меньше или равен {MIN_RATE}!");
+        if (rate > MAX_RATE) throw new ArgumentException($"Курс не может быть больше {MAX_RATE}!");
     }
 }

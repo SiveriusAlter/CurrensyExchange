@@ -29,14 +29,14 @@ public class Currency
         return new Currency(id, code, fullName, sign);
     }
 
-    private static void Validate(string validateString, int minLength, int maxLength, string pattern)
+    public static void Validate(string validateString, int minLength, int maxLength, string pattern)
     {
         if (string.IsNullOrEmpty(validateString))
-            throw new ArgumentException("Не заполнен один или несколько параметров валюты\n");
+            throw new ArgumentException("Не заполнен один или несколько параметров\n");
         else if (validateString.Length < minLength || validateString.Length > maxLength)
             throw new ArgumentException(
-                $"Не корректное количество символов указано для поля {validateString} валюты. Код может быть от {minLength}-х до {maxLength} символов.\n");
+                $"Не корректное количество символов указано для поля {validateString} валюты. Длина строки может быть от {minLength}-х до {maxLength} символов.\n");
         else if (Regex.IsMatch(validateString, pattern, RegexOptions.Compiled))
-            throw new ArgumentException($"Не корректные символы в строке {validateString} валюты.\n");
+            throw new ArgumentException($"Не корректные символы в строке {validateString}.\n");
     }
 }
