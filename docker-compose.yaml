@@ -7,7 +7,7 @@ services:
     container_name: currencies-backend
     build:
       context: .
-      dockerfile: CurrensyExchange/Dockerfile
+      dockerfile: CurrencyExchange/Dockerfile
     ports:
       - "80:80"
     networks:
