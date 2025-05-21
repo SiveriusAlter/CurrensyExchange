@@ -28,7 +28,7 @@ jobs:
       - name: Restore dependencies
         run: |
           cd CurrencyExchange
-          dotnet restore
+          dotnet restore CurrencyExchange.API.csproj
       
       - name: Build
         run: dotnet build --no-restore
