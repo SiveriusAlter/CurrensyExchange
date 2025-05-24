@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CurrencyExchange.API.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class ExchangeRateController(
     IExtendedCurrencyExchangeRepository<ExchangeRate> exchangeRate,
     ICurrencyExchangeRepository<Currency> currency) : ControllerBase

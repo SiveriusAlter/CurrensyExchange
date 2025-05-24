@@ -7,7 +7,7 @@ using CurrencyExchange.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-var corsConfig = builder.Configuration["CorsConfig:Origin"]
+var corsConfig = builder.Configuration.GetSection("CorsConfig:Origin").Get<string[]>()
                  ?? throw new ArgumentNullException(@"CorsConfig:Origin is required.");
 
 builder.Services.AddControllers();
