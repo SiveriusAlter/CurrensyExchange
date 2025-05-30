@@ -13,8 +13,7 @@ namespace CurrencyExchange.Data.Configurations
                 .IsRequired();
             builder.Property(b => b.FullName)
                 .IsRequired();
-            builder.Property(b => b.Sign)
-                .IsRequired();
+            builder.Property(b => b.Sign);
         }
     }
 }

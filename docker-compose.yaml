@@ -1,44 +1,44 @@
-networks:
-  currencies-network:
-    driver: bridge
+# networks:
+#   currencies-network:
+#     driver: bridge
 
 services:
-  nginx:
-    image: nginx:stable-alpine
-    container_name: currencies-proxy
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80:3000"
-    restart: always
-    networks:
-      - currencies-network
-    depends_on:
-      - app
+#   nginx:
+#     image: nginx:stable-alpine
+#     container_name: currencies-proxy
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/nginx.conf
+#     ports:
+#       - "80:3000"
+#     restart: always
+#     networks:
+#       - currencies-network
+#     depends_on:
+#       - app
 
-  front:
-    image: currencyexchangefront
-    container_name: currencies-frontend
-    expose:
-      - "4200"
-    restart: always
-    networks:
-      - currencies-network
-    depends_on:
-      - app
+#   front:
+#     image: currencyexchangefront
+#     container_name: currencies-frontend
+#     expose:
+#       - "4200"
+#     restart: always
+#     networks:
+#       - currencies-network
+#     depends_on:
+#       - app
 
-  app:
-    image: currencyexchangeback
-    container_name: currencies-backend
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-    expose:
-      - "8080"
-    networks:
-      - currencies-network
-    depends_on:
-      - postgres
+#   app:
+#     image: currencyexchangeback
+#     container_name: currencies-backend
+#     # build:
+#     #   context: .
+#     #   dockerfile: Dockerfile
+#     expose:
+#       - "8080"
+#     networks:
+#       - currencies-network
+#     depends_on:
+#       - postgres
 
   postgres:
     image: postgres:17
@@ -48,13 +48,13 @@ services:
       POSTGRES_USER: "alexpg"
       POSTGRES_PASSWORD: ${password}
       PGDATA: "/var/lib/postgresql/data/pgdata"
-    expose:
-      - "5432"
+    ports:
+      - "5432:5432"
     volumes:
       - ../2. Init Database:/docker-entrypoint-initdb.d
       - currencies:/var/lib/postgresql/data
-    networks:
-      - currencies-network
+    # networks:
+    #   - currencies-network
 
 volumes:
   currencies:

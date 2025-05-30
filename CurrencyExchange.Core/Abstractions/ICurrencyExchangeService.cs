@@ -2,13 +2,11 @@
 
 namespace CurrencyExchange.Core.Abstractions;
 
-public interface ICurrencyExchangeService
+public interface ICurrencyExchangeService<T> where T : class
 {
-    Currency BaseCurrency { get; }
-    Currency TargetCurrency { get; }
     float Amount { get; }
     ExchangeRate ExchangeRate { get; }
     float RecalculateAmount { get; }
 
-    Task Calculation(Currency baseCurrency, Currency targetCurrency, float amount);
+    void Calculate(T rate, float amount);
 }

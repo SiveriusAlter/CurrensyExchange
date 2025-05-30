@@ -23,7 +23,7 @@ public class Currency
         code = code.ToUpperInvariant();
 
         Validate(code, 3, 5, @"[^A-Z]");
-        Validate(fullName, 3, 60, @"[^A-Za-z() ]");
+        Validate(fullName, 3, 60, @"[^A-Za-zА-Яа-яЁё() ]");
         Validate(sign, 1, 3, @"[ \n]");
 
         return new Currency(id, code, fullName, sign);

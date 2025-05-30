@@ -1,6 +1,6 @@
 ﻿namespace CurrencyExchange.Core.Abstractions;
 
-public interface ICurrencyExchangeRepository<T>
+public interface ICurrencyRepository<T>
     where T : class
 {
     Task<List<T>> GetAll();

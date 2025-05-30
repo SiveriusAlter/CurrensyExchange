@@ -1,0 +1,33 @@
+{
+  "providerId": "Microsoft.Tools.ServiceModel.Svcutil",
+  "version": "8.0.0",
+  "options": {
+    "inputs": [
+      "https://www.cbr.ru/DailyInfoWebServ/DailyInfo.asmx?wsdl"
+    ],
+    "namespaceMappings": [
+      "*, ServiceReference"
+    ],
+    "outputFile": "Reference.cs",
+    "references": [
+      "D:\\Roadmap_Alex\\CurrencyExchangeProject\\CurrencyExchange.Data\\bin\\Release\\net8.0\\CurrencyExchange.Core.dll",
+      "Microsoft.EntityFrameworkCore, {Microsoft.EntityFrameworkCore, 9.0.4}",
+      "Microsoft.EntityFrameworkCore.Abstractions, {Microsoft.EntityFrameworkCore.Abstractions, 9.0.4}",
+      "Microsoft.EntityFrameworkCore.Relational, {Microsoft.EntityFrameworkCore.Relational, 9.0.4}",
+      "Microsoft.Extensions.Caching.Abstractions, {Microsoft.Extensions.Caching.Abstractions, 9.0.4}",
+      "Microsoft.Extensions.Caching.Memory, {Microsoft.Extensions.Caching.Memory, 9.0.4}",
+      "Microsoft.Extensions.Configuration.Abstractions, {Microsoft.Extensions.Configuration.Abstractions, 9.0.4}",
+      "Microsoft.Extensions.DependencyInjection, {Microsoft.Extensions.DependencyInjection, 9.0.4}",
+      "Microsoft.Extensions.DependencyInjection.Abstractions, {Microsoft.Extensions.DependencyInjection.Abstractions, 9.0.4}",
+      "Microsoft.Extensions.Logging, {Microsoft.Extensions.Logging, 9.0.4}",
+      "Microsoft.Extensions.Logging.Abstractions, {Microsoft.Extensions.Logging.Abstractions, 9.0.4}",
+      "Microsoft.Extensions.Options, {Microsoft.Extensions.Options, 9.0.4}",
+      "Microsoft.Extensions.Primitives, {Microsoft.Extensions.Primitives, 9.0.4}",
+      "Npgsql, {Npgsql, 9.0.3}",
+      "Npgsql.EntityFrameworkCore.PostgreSQL, {Npgsql.EntityFrameworkCore.PostgreSQL, 9.0.4}",
+      "System.Diagnostics.DiagnosticSource, {System.Diagnostics.DiagnosticSource, 9.0.4}"
+    ],
+    "targetFramework": "net8.0",
+    "typeReuseMode": "All"
+  }
+}

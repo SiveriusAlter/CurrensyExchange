@@ -8,16 +8,16 @@ namespace CurrencyExchange.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class ExchangeRateController(
-    IExtendedCurrencyExchangeRepository<ExchangeRate> exchangeRate,
-    ICurrencyExchangeRepository<Currency> currency) : ControllerBase
+    IExchangeRateRepository<ExchangeRate> rate,
+    ICurrencyRepository<Currency> currency) : ControllerBase
 {
-    private readonly IExtendedCurrencyExchangeRepository<ExchangeRate> _exchangeRateRepository = exchangeRate;
-    private readonly ICurrencyExchangeRepository<Currency> _curencyService = currency;
+    private readonly IExchangeRateRepository<ExchangeRate> _rateRepository = rate;
+    private readonly ICurrencyRepository<Currency> _curencyService = currency;
 
     [HttpGet]
     public async Task<ActionResult<List<ExchangeRateDTO>>> GetRates()
     {
-        var exchangeRates = await _exchangeRateRepository.GetAll();
+        var exchangeRates = await _rateRepository.GetAll();
         var response = exchangeRates
             .Select(b => new ExchangeRateDTO(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
 
@@ -27,8 +27,8 @@ public class ExchangeRateController(
     [HttpGet("{searchString}")]
     public async Task<ActionResult<List<ExchangeRateDTO>>> GetRate(string searchString)
     {
-        var currencies = await _exchangeRateRepository.Find(searchString);
-        var response = currencies
+        var exchangeRates = await _rateRepository.Find(searchString);
+        var response = exchangeRates
             .Select(b => new ExchangeRateDTO(b.Id, b.BaseCurrency, b.TargetCurrency, b.Rate));
 
         return Ok(response);
@@ -45,7 +45,7 @@ public class ExchangeRateController(
         var exchangeRate = ExchangeRate
             .Create(0, baseCurrency, targetCurrency, addExchangeRate.Rate);
 
-        var response = await _exchangeRateRepository.Insert(exchangeRate);
+        var response = await _rateRepository.Insert(exchangeRate);
 
         return Ok(response);
     }
@@ -60,7 +60,7 @@ public class ExchangeRateController(
         var targetCurrency = await _curencyService.Get(targetCurrencyCode);
 
         var exchangeRate = ExchangeRate.Create(0, baseCurrency, targetCurrency, updateRate.Rate);
-        var response = await _exchangeRateRepository.Update(exchangeRate);
+        var response = await _rateRepository.Update(exchangeRate);
 
         return Ok(response);
     }

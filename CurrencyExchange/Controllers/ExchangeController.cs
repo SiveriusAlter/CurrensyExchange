@@ -1,5 +1,4 @@
 ﻿using CurrencyExchange.API.Contracts;
-using CurrencyExchange.Application.Application;
 using CurrencyExchange.Core.Abstractions;
 using CurrencyExchange.Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,22 +7,33 @@ namespace CurrencyExchange.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ExchangeController(ICurrencyExchangeService exchange, ICurrencyExchangeRepository<Currency> currency)
+public class ExchangeController(
+    ICurrencyExchangeService<ExchangeRate> exchange,
+    ICurrencyRepository<Currency> currency,
+    IExchangeRateRepository<ExchangeRate> rateRepository)
     : ControllerBase
 {
-    private readonly ICurrencyExchangeService _exchangeRate = exchange;
-    private readonly ICurrencyExchangeRepository<Currency> _currency = currency;
-
-    [HttpGet("from={baseCurrencyCode}&to={targetCurrencyCode}&amount={amount}")]
+    [HttpGet("from={baseCurrencyCode}&to={targetCurrencyCode}&amount={amount:float}")]
     public async Task<ActionResult<ExchangeDTO>> GetConverted(string baseCurrencyCode, string targetCurrencyCode,
         float amount)
     {
-        var baseCurrency = await _currency.Get(baseCurrencyCode);
-        var targetCurrency = await _currency.Get(targetCurrencyCode);
+        var baseCurrency = await currency.Get(baseCurrencyCode)
+                           ?? throw new ArgumentException(
+                               "Не удалось найти валюту");
+        var targetCurrency = await currency.Get(targetCurrencyCode)
+                             ?? throw new ArgumentException(
+                                 "Не удалось найти валюту");
+        ;
 
-        await exchange.Calculation(baseCurrency, targetCurrency, amount);
+        var exchangeRate = await rateRepository.Get(baseCurrency, targetCurrency)
+                           ?? await rateRepository.GetAndSaveRevers(baseCurrency, targetCurrency)
+                           ?? await rateRepository.GetAndSaveCross(baseCurrency, targetCurrency)
+                           ?? throw new InvalidOperationException(
+                               "Не удалось найти или создать подходящий обменный курс");
 
-        var response = new ExchangeDTO(exchange.BaseCurrency, exchange.TargetCurrency, exchange.ExchangeRate.Rate,
+        exchange.Calculate(exchangeRate, amount);
+
+        var response = new ExchangeDTO(exchange.ExchangeRate.BaseCurrency, exchange.ExchangeRate.TargetCurrency, exchange.ExchangeRate.Rate,
             amount, exchange.RecalculateAmount);
 
         return Ok(response);

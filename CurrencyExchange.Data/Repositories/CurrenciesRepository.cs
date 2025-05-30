@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CurrencyExchange.Data.Repositories
 {
-    public class CurrenciesRepository(CurrencyExchangeDBContext dbContext) : ICurrencyExchangeRepository<Currency>
+    public class CurrenciesRepository(CurrencyExchangeDBContext dbContext) : ICurrencyRepository<Currency>
     {
         private readonly CurrencyExchangeDBContext _dbContext = dbContext;
 

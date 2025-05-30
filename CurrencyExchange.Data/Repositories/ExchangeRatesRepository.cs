@@ -6,15 +6,13 @@ using Microsoft.EntityFrameworkCore;
 namespace CurrencyExchange.Data.Repositories
 {
     public class ExchangeRatesRepository(CurrencyExchangeDBContext dbContext)
-        : IExtendedCurrencyExchangeRepository<ExchangeRate>
+        : IExchangeRateRepository<ExchangeRate>
     {
-        private readonly CurrencyExchangeDBContext _dbContext = dbContext;
-
         public async Task<List<ExchangeRate>> GetAll()
         {
-            return await (from rate in _dbContext.ExchangeRates
-                    join baseCurrency in _dbContext.Currencies on rate.BaseCurrencyId equals baseCurrency.Id
-                    join targetCurrency in _dbContext.Currencies on rate.TargetCurrencyId equals targetCurrency.Id
+            return await (from rate in dbContext.ExchangeRates
+                    join baseCurrency in dbContext.Currencies on rate.BaseCurrencyId equals baseCurrency.Id
+                    join targetCurrency in dbContext.Currencies on rate.TargetCurrencyId equals targetCurrency.Id
                     select ExchangeRate.Create
                     (
                         rate.Id,
@@ -37,7 +35,7 @@ namespace CurrencyExchange.Data.Repositories
 
         public async Task<List<ExchangeRate>> Find(string findText)
         {
-            return await (from rate in _dbContext.ExchangeRates
+            return await (from rate in dbContext.ExchangeRates
                     where EF.Functions.ILike(rate.BaseCurrency.Code,$"{findText}%") 
                           || EF.Functions.ILike(rate.TargetCurrency.Code,$"{findText}%")
                           || EF.Functions.ILike(rate.BaseCurrency.FullName,$"%{findText}%")
@@ -66,7 +64,7 @@ namespace CurrencyExchange.Data.Repositories
         {
             if (baseCurrencyId == targetCurrencyId)
             {
-                var currency = await _dbContext.Currencies
+                var currency = await dbContext.Currencies
                     .Where(c => c.Id == baseCurrencyId)
                     .FirstAsync();
                 return ExchangeRate.Create(
@@ -87,9 +85,9 @@ namespace CurrencyExchange.Data.Repositories
                 );
             }
 
-            return await (from rate in _dbContext.ExchangeRates
-                    join baseCurrency in _dbContext.Currencies on rate.BaseCurrencyId equals baseCurrency.Id
-                    join targetCurrency in _dbContext.Currencies on rate.TargetCurrencyId equals targetCurrency.Id
+            return await (from rate in dbContext.ExchangeRates
+                    join baseCurrency in dbContext.Currencies on rate.BaseCurrencyId equals baseCurrency.Id
+                    join targetCurrency in dbContext.Currencies on rate.TargetCurrencyId equals targetCurrency.Id
                     where baseCurrency.Id == baseCurrencyId && targetCurrency.Id == targetCurrencyId
                     select ExchangeRate.Create(
                         rate.Id,
@@ -119,26 +117,14 @@ namespace CurrencyExchange.Data.Repositories
                 throw new InvalidOperationException("Валютная пара уже существует");
             }
 
-            var baseCurrencyEntity = new CurrencyEntity(
-                exchangeRate.BaseCurrency.Id,
-                exchangeRate.BaseCurrency.Code,
-                exchangeRate.BaseCurrency.FullName,
-                exchangeRate.BaseCurrency.Sign);
-
-            var targetCurrencyEntity = new CurrencyEntity(
-                exchangeRate.TargetCurrency.Id,
-                exchangeRate.TargetCurrency.Code,
-                exchangeRate.TargetCurrency.FullName,
-                exchangeRate.TargetCurrency.Sign);
-
             var exchangeRateEntity = new ExchangeRateEntity()
             {
                 BaseCurrencyId = exchangeRate.BaseCurrency.Id,
                 TargetCurrencyId = exchangeRate.TargetCurrency.Id,
                 Rate = exchangeRate.Rate
             };
-            await _dbContext.AddAsync(exchangeRateEntity);
-            await _dbContext.SaveChangesAsync();
+            await dbContext.AddAsync(exchangeRateEntity);
+            await dbContext.SaveChangesAsync();
             return exchangeRate;
         }
 
@@ -151,20 +137,111 @@ namespace CurrencyExchange.Data.Repositories
                 throw new InvalidOperationException("Валютная пара не найдена");
             }
 
-            await _dbContext.ExchangeRates
+            await dbContext.ExchangeRates
                 .Where(b => exchangeRate.BaseCurrency.Id == b.BaseCurrencyId &&
                             exchangeRate.TargetCurrency.Id == b.TargetCurrencyId)
                 .ExecuteUpdateAsync(set => set.SetProperty(s => s.Rate, exchangeRate.Rate));
+            await dbContext.SaveChangesAsync();
             return exchangeRate;
+        }
+
+        public async Task Update(string baseCurrencyCode, string targetCurrencyCode, float rate)
+        {
+            var checkExistence = await CheckExist(baseCurrencyCode, targetCurrencyCode);
+            if (!checkExistence)
+            {
+                throw new InvalidOperationException("Валютная пара не найдена");
+            }
+
+            var exchangeRate = await dbContext.ExchangeRates
+                .Where(b => baseCurrencyCode == b.BaseCurrency.Code &&
+                            targetCurrencyCode == b.TargetCurrency.Code)
+                .ExecuteUpdateAsync(set => set.SetProperty(s => s.Rate, rate));
+            await dbContext.SaveChangesAsync();
         }
 
 
         public async Task<bool> CheckExist(ExchangeRate exchangeRate)
         {
-            return await _dbContext.ExchangeRates
+            return await dbContext.ExchangeRates
                 .AnyAsync(er =>
                     er.BaseCurrencyId == exchangeRate.BaseCurrency.Id &&
                     er.TargetCurrencyId == exchangeRate.TargetCurrency.Id);
         }
+        
+        public async Task<bool> CheckExist(string baseCurrencyCode, string targetCurrencyCode)
+        {
+            return await dbContext.ExchangeRates
+                .AnyAsync(er =>
+                    er.BaseCurrency.Code == baseCurrencyCode &&
+                    er.TargetCurrency.Code == targetCurrencyCode);
+        }
+        
+        
+
+        public async Task<ExchangeRate?> Get(Currency BaseCurrency, Currency TargetCurrency)
+        {
+            var directRate = await Get(BaseCurrency.Id, TargetCurrency.Id);
+            return directRate;
+        }
+
+
+        public async Task<ExchangeRate?> GetAndSaveRevers(Currency BaseCurrency, Currency TargetCurrency)
+        {
+            var reverseRate = await Get(TargetCurrency.Id, BaseCurrency.Id);
+
+            if (reverseRate == null)
+            {
+                return null;
+            }
+
+            if (reverseRate.Rate <= 0)
+            {
+                throw new DivideByZeroException("Курс не может быть меньше или равен нулю!");
+            }
+
+            var newDirectRate = ExchangeRate
+                .Create(0, reverseRate.TargetCurrency, reverseRate.BaseCurrency, 1 / reverseRate.Rate);
+            return await Insert(newDirectRate);
+        }
+
+
+        public async Task<ExchangeRate?> GetAndSaveCross(Currency BaseCurrency, Currency TargetCurrency)
+        {
+            var currencies = await GetAll();
+            foreach (var currency in currencies)
+            {
+                var baseRate = await Get(BaseCurrency.Id, currency.Id);
+                var targetRate = await Get(TargetCurrency.Id, currency.Id);
+
+                if (baseRate is not null && targetRate is not null)
+                {
+                    var exchangeRate = ExchangeRate.Create(
+                        0,
+                        BaseCurrency,
+                        TargetCurrency,
+                        baseRate.Rate / targetRate.Rate
+                    );
+                    return await Insert(exchangeRate);
+                }
+
+                baseRate = await Get(currency.Id, BaseCurrency.Id);
+                targetRate = await Get(currency.Id, TargetCurrency.Id);
+
+                if (baseRate is not null && targetRate is not null)
+                {
+                    var exchangeRate = ExchangeRate.Create(
+                        0,
+                        BaseCurrency,
+                        TargetCurrency,
+                        targetRate.Rate / baseRate.Rate
+                    );
+                    return await Insert(exchangeRate);
+                }
+            }
+
+            return null;
+        }
+        
     }
 }

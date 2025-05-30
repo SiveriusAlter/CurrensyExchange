@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using CurrencyExchange.API.Contracts;
+﻿using CurrencyExchange.API.Contracts;
 using CurrencyExchange.Core.Abstractions;
 using CurrencyExchange.Core.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,9 +7,9 @@ namespace CurrencyExchange.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CurrencyController(ICurrencyExchangeRepository<Currency> currency) : ControllerBase
+public class CurrencyController(ICurrencyRepository<Currency> currency) : ControllerBase
 {
-    private readonly ICurrencyExchangeRepository<Currency> _currencyRepository = currency;
+    private readonly ICurrencyRepository<Currency> _currencyRepository = currency;
 
     [HttpGet]
     public async Task<ActionResult<List<CurrencyDTO>>> GetAll()
